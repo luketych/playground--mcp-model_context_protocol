@@ -22,10 +22,22 @@ This project demonstrates communication between two applications using the Model
 
 ## Installation
 
-Install the required dependencies:
+This project uses the uv package manager for faster dependency management.
 
+1. Install uv:
 ```bash
-pip install fastapi uvicorn requests
+pip install uv
+```
+
+2. Create and activate a virtual environment:
+```bash
+uv venv
+source .venv/bin/activate  # On macOS
+```
+
+3. Install the project and its dependencies:
+```bash
+uv pip install -e .
 ```
 
 ## Configuration
@@ -42,24 +54,24 @@ pip install fastapi uvicorn requests
 
 ## Running the Services
 
-Start each service in a separate terminal:
+Start each service in a separate terminal (make sure your virtual environment is activated):
 
 1. Start the MCP Server:
    ```bash
    cd mcp_server
-   uvicorn app:app --port=9001
+   python -m uvicorn app:app --port=9001
    ```
 
 2. Start App A:
    ```bash
    cd app_a
-   uvicorn app:app --port=8000
+   python -m uvicorn app:app --port=8000
    ```
 
 3. Start App B:
    ```bash
    cd app_b
-   uvicorn app:app --port=8001
+   python -m uvicorn app:app --port=8001
    ```
 
 ## Testing the Setup
