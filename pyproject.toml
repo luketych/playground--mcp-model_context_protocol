@@ -17,5 +17,8 @@ dependencies = [
     "pydantic",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["app_a", "app_b", "mcp_server"]
+
 [tool.uv]
-python = "3.8"
+python-version = "3.8"
