@@ -1,53 +1,66 @@
-## Next Actions: Implement MCP Flow
+## Next Actions: Write README - Quick Setup Instructions
 
-1. Start all three servers:
-   ```bash
-   # Terminal 1: Start MCP Server
-   cd mcp_server
-   uvicorn app:app --port=9000
+1. Create the README.md file with the following sections:
 
-   # Terminal 2: Start App A
-   cd app_a
-   uvicorn app:app --port=8000
+   a. Project Overview
+      - Brief description of the MCP Communication Project
+      - Explanation of the three main components (MCP Server, App A, App B)
+      - Description of the Fast MCP style implementation
 
-   # Terminal 3: Start App B
-   cd app_b
-   uvicorn app:app --port=8001
-   ```
+   b. Prerequisites
+      - Python requirements
+      - API keys needed (OpenAI and Anthropic)
+      - Port availability (9001, 8000, 8001)
 
-2. Test the email summarization flow:
-   ```bash
-   # Send a test email to App A
-   curl -X POST "http://localhost:8000/summarize" \
-     -H "Content-Type: application/json" \
-     -d '{"email":"Hello, I am interested in purchasing your product. Could you please provide more information about pricing and availability? Best regards, John"}'
-   ```
+   c. Installation
+      ```bash
+      # Install required dependencies
+      pip install fastapi uvicorn requests
+      ```
 
-3. Test App B's polling:
-   ```bash
-   # Poll App B to receive and process the message
-   curl -X POST "http://localhost:8001/poll"
-   ```
+   d. Configuration
+      - Instructions to set up API keys in:
+         * app_a/llm_client.py (OpenAI key)
+         * app_b/llm_client.py (Anthropic key)
 
-4. Expected Flow:
-   a. App A receives the email via `/summarize` endpoint
-   b. App A uses OpenAI to summarize the email
-   c. App A builds an MCP package with:
-      - System message: "You are a CRM assistant."
-      - Memory: ["Customer is a frequent buyer."]
-      - Conversation: [The email summary]
-      - Task: "Draft a polite reply."
-   d. App A sends the MCP package to MCP Server
-   e. App B polls the MCP Server via `/poll`
-   f. MCP Server delivers the package to App B
-   g. App B parses the package into a prompt
-   h. App B uses Claude to generate a reply
-   i. App B returns the generated reply
+   e. Running the Services
+      ```bash
+      # Terminal 1: Start MCP Server
+      cd mcp_server
+      uvicorn app:app --port=9001
 
-5. Verification Steps:
-   - Check that App A returns {"status": "sent"}
-   - Check that the MCP Server successfully stores the message
-   - Check that App B successfully retrieves and processes the message
-   - Verify the final response contains a properly formatted reply from Claude
+      # Terminal 2: Start App A
+      cd app_a
+      uvicorn app:app --port=8000
 
-Note: Make sure to replace "your_openai_key" and "your_anthropic_key" in the respective llm_client.py files with actual API keys before testing.
+      # Terminal 3: Start App B
+      cd app_b
+      uvicorn app:app --port=8001
+      ```
+
+   f. Testing the Setup
+      ```bash
+      # Send a test email to App A
+      curl -X POST "http://localhost:8000/summarize" \
+        -H "Content-Type: application/json" \
+        -d '{"email":"Hello, I need help with my laptop refund."}'
+
+      # Check App B's response
+      curl -X POST "http://localhost:8001/poll"
+      ```
+
+   g. Project Structure
+      - Directory layout explanation
+      - Purpose of each file
+      - Flow diagram of how the components interact
+
+2. Format and Style
+   - Use Markdown formatting for better readability
+   - Include code blocks with proper syntax highlighting
+   - Add section headers and bullet points for clear organization
+
+3. Review and Testing
+   - Verify all commands work as documented
+   - Check that the installation steps are complete
+   - Ensure API key setup instructions are clear
+   - Validate all endpoints and example requests
