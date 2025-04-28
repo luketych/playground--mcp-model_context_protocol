@@ -18,4 +18,4 @@ def build_mcp_package(system, memory, conversation, current_task):
     }
 
 def send_mcp_to_server(mcp_package):
-    requests.post("http://localhost:9000/send_context", json=mcp_package)
+    requests.post("http://localhost:9001/send_context", json=mcp_package)

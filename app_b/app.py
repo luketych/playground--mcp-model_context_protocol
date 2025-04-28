@@ -8,7 +8,7 @@ app = FastAPI()
 
 @app.post("/poll")
 def poll_mcp_server():
-    response = requests.post("http://localhost:9000/receive_context/AppB")
+    response = requests.post("http://localhost:9001/receive_context/AppB")
     messages = response.json().get("messages", [])
     replies = []
     for mcp_package in messages:
