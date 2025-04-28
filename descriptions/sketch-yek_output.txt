@@ -1,0 +1,291 @@
+>>>> sketch.md
+# MCP Communication Project Sketch (with Middleman MCP Server and Fast MCP)
+
+## Goal
+- Create **two apps** (App A and App B) that communicate using **MCP (Model Context Protocol)**.
+- Insert a **MCP Server** (Middleman) that manages, optimizes, and forwards context between apps.
+- Implement MCP Server using **Fast MCP** style (simple, stateless, fast delivery).
+- Each app calls an **external cloud LLM** (OpenAI for App A, Anthropic for App B).
+- No local models needed.
+
+---
+
+## Project Structure
+
+```
+/project-root
+    /mcp_server
+        app.py
+        router.py
+    /app_a
+        app.py
+        llm_client.py
+        mcp_handler.py
+    /app_b
+        app.py
+        llm_client.py
+        mcp_handler.py
+README.md
+instructions.txt
+```
+
+---
+
+## Components Breakdown
+
+| File | Purpose |
+|:-----|:--------|
+| `/mcp_server/app.py` | Runs the MCP server (FastAPI app) using Fast MCP principles. |
+| `/mcp_server/router.py` | Handles MCP routing, stateless fast delivery, minimal storage. |
+| `/app_a/mcp_handler.py` | Creates and sends MCP packages to MCP Server. |
+| `/app_a/llm_client.py` | Calls OpenAI API. |
+| `/app_a/app.py` | Minimal API to trigger summarization and MCP sending. |
+| `/app_b/mcp_handler.py` | Parses received MCP packages. |
+| `/app_b/llm_client.py` | Calls Anthropic API. |
+| `/app_b/app.py` | Polls MCP server for new MCP packages. |
+
+---
+
+## Fast MCP Style MCP Server (`/mcp_server`)
+
+### `/mcp_server/router.py`
+```python
+from fastapi import APIRouter, Request
+from typing import Dict
+
+router = APIRouter()
+
+# Fast MCP - minimal memory, stateless delivery
+inbox: Dict[str, list] = {}
+
+@router.post("/send_context")
+async def send_context(request: Request):
+    mcp_package = await request.json()
+    target = mcp_package.get("target")
+    if target:
+        inbox.setdefault(target, []).append(mcp_package)
+        return {"status": "stored"}
+    return {"status": "error", "reason": "Missing target"}
+
+@router.post("/receive_context/{app_id}")
+async def receive_context(app_id: str):
+    messages = inbox.pop(app_id, [])
+    return {"messages": messages}
+```
+
+### `/mcp_server/app.py`
+```python
+from fastapi import FastAPI
+import uvicorn
+from router import router
+
+app = FastAPI()
+app.include_router(router)
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=9000)
+```
+
+---
+
+## `/app_a/mcp_handler.py`
+```python
+import requests
+
+def build_mcp_package(system, memory, conversation, current_task):
+    return {
+        "sender": "AppA",
+        "target": "AppB",
+        "context": {
+            "system_message": system,
+            "memory": memory,
+            "conversation": conversation,
+            "current_task": current_task
+        },
+        "meta": {
+            "created_at": "2025-04-28T15:00:00Z",
+            "compression": "none",
+            "token_estimate": 1500
+        }
+    }
+
+def send_mcp_to_server(mcp_package):
+    requests.post("http://localhost:9000/send_context", json=mcp_package)
+```
+
+---
+
+## `/app_a/llm_client.py`
+```python
+import requests
+
+OPENAI_API_KEY = "your_openai_key"
+
+def call_openai_chat(prompt):
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
+    data = {
+        "model": "gpt-4-turbo",
+        "messages": [{"role": "user", "content": prompt}]
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()["choices"][0]["message"]["content"]
+```
+
+---
+
+## `/app_a/app.py`
+```python
+from fastapi import FastAPI
+import uvicorn
+from mcp_handler import build_mcp_package, send_mcp_to_server
+from llm_client import call_openai_chat
+
+app = FastAPI()
+
+@app.post("/summarize")
+def summarize_email(email: str):
+    summary = call_openai_chat(f"Summarize this email briefly:\n{email}")
+    mcp_package = build_mcp_package(
+        system="You are a CRM assistant.",
+        memory=["Customer is a frequent buyer."],
+        conversation=[{"role": "user", "content": summary}],
+        current_task="Draft a polite reply."
+    )
+    send_mcp_to_server(mcp_package)
+    return {"status": "sent"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8000)
+```
+
+---
+
+## `/app_b/mcp_handler.py`
+```python
+# Handles MCP parsing for App B
+
+def parse_mcp_package(mcp_package):
+    context = mcp_package["context"]
+    prompt = (
+        f"System Instruction: {context['system_message']}\n\n"
+        "Memory:\n" + "\n".join(context.get("memory", [])) + "\n\n"
+        "Conversation:\n" + "\n".join(
+            f"{m['role'].capitalize()}: {m['content']}" for m in context.get("conversation", [])
+        ) + "\n\n"
+        f"Task: {context['current_task']}"
+    )
+    return prompt
+```
+
+---
+
+## `/app_b/llm_client.py`
+```python
+import requests
+
+ANTHROPIC_API_KEY = "your_anthropic_key"
+
+def call_claude(prompt):
+    url = "https://api.anthropic.com/v1/messages"
+    headers = {
+        "Authorization": f"Bearer {ANTHROPIC_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "claude-3-opus-20240229",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 1000
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()["content"][0]["text"]
+```
+
+---
+
+## `/app_b/app.py`
+```python
+from fastapi import FastAPI
+import uvicorn
+import requests
+from mcp_handler import parse_mcp_package
+from llm_client import call_claude
+
+app = FastAPI()
+
+@app.post("/poll")
+def poll_mcp_server():
+    response = requests.post("http://localhost:9000/receive_context/AppB")
+    messages = response.json().get("messages", [])
+    replies = []
+    for mcp_package in messages:
+        prompt = parse_mcp_package(mcp_package)
+        reply = call_claude(prompt)
+        replies.append(reply)
+    return {"status": "processed", "replies": replies}
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8001)
+```
+
+---
+
+## MCP Flow Summary
+
+| Step | Action |
+|:-----|:------|
+| 1 | App A receives an email via `/summarize`. |
+| 2 | App A summarizes it using OpenAI and builds an MCP package. |
+| 3 | App A sends the MCP package to the MCP Server. |
+| 4 | App B polls the MCP Server via `/poll`. |
+| 5 | MCP Server delivers the MCP package to App B. |
+| 6 | App B parses the MCP package, drafts a reply using Claude API. |
+| 7 | App B returns the generated reply. |
+
+---
+
+## README - Quick Setup Instructions
+
+1. Install dependencies:
+    ```bash
+    pip install fastapi uvicorn requests
+    ```
+2. Run MCP Server:
+    ```bash
+    uvicorn mcp_server.app:app --port=9000
+    ```
+3. Run App A:
+    ```bash
+    uvicorn app_a.app:app --port=8000
+    ```
+4. Run App B:
+    ```bash
+    uvicorn app_b.app:app --port=8001
+    ```
+5. POST an email string to App A:
+    ```bash
+    curl -X POST "http://localhost:8000/summarize" -H "Content-Type: application/json" -d '{"email":"Hello, I need help with my laptop refund."}'
+    ```
+6. Trigger polling on App B:
+    ```bash
+    curl -X POST "http://localhost:8001/poll"
+    ```
+
+---
+
+## Future Expansions
+- Add authentication between apps and MCP server.
+- Add compression/summarization for oversized contexts.
+- Add streaming context delivery.
+- Add message prioritization.
+- Move to database-backed MCP queues if needed.
+
+---
+
+## Core Concept Reminder
+> MCP (Model Context Protocol) separates **context management** from **model hosting**. The MCP Server acts as a **middleman** to optimize and deliver structured contexts between apps, whether they use OpenAI, Anthropic, or other LLMs. **Fast MCP** principles keep the MCP Server light, stateless, and fast.
+
+---
+
+# 🚀 End of Sketch (Middleman + Fast MCP Version)
+

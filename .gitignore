@@ -1,0 +1,45 @@
+# === Node.js / npm / Yarn ===
+node_modules/
+dist/
+build/
+.npm/
+.yarn/
+.pnp.*
+*.tgz
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+.env
+.venv
+venv/
+env/
+*.log
+
+# === VS Code ===
+.vscode/
+
+# === MacOS ===
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# === Docker (optional) ===
+*.pid
+docker-compose.override.yml
+.env.local
+
+# === OS / Editor backups ===
+*.swp
+*.swo
+*.swn
+*~
