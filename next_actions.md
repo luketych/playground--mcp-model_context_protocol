@@ -1,81 +1,78 @@
-## Next Actions: Set up App A
+## Next Actions: Set up App B
 
-1. Create the `app_a` directory structure:
+1. Create the `app_b` directory structure:
    ```bash
-   mkdir -p app_a
+   mkdir -p app_b
    ```
 
-2. Create `app_a/mcp_handler.py` with the following content:
+2. Create `app_b/mcp_handler.py` with the following content:
+   ```python
+   def parse_mcp_package(mcp_package):
+       context = mcp_package["context"]
+       prompt = (
+           f"System Instruction: {context['system_message']}\n\n"
+           "Memory:\n" + "\n".join(context.get("memory", [])) + "\n\n"
+           "Conversation:\n" + "\n".join(
+               f"{m['role'].capitalize()}: {m['content']}" for m in context.get("conversation", [])
+           ) + "\n\n"
+           f"Task: {context['current_task']}"
+       )
+       return prompt
+   ```
+
+3. Create `app_b/llm_client.py` with the following content:
    ```python
    import requests
 
-   def build_mcp_package(system, memory, conversation, current_task):
-       return {
-           "sender": "AppA",
-           "target": "AppB",
-           "context": {
-               "system_message": system,
-               "memory": memory,
-               "conversation": conversation,
-               "current_task": current_task
-           },
-           "meta": {
-               "created_at": "2025-04-28T15:00:00Z",
-               "compression": "none",
-               "token_estimate": 1500
-           }
+   ANTHROPIC_API_KEY = "your_anthropic_key"
+
+   def call_claude(prompt):
+       url = "https://api.anthropic.com/v1/messages"
+       headers = {
+           "Authorization": f"Bearer {ANTHROPIC_API_KEY}",
+           "Content-Type": "application/json"
        }
-
-   def send_mcp_to_server(mcp_package):
-       requests.post("http://localhost:9000/send_context", json=mcp_package)
-   ```
-
-3. Create `app_a/llm_client.py` with the following content:
-   ```python
-   import requests
-
-   OPENAI_API_KEY = "your_openai_key"
-
-   def call_openai_chat(prompt):
-       url = "https://api.openai.com/v1/chat/completions"
-       headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
        data = {
-           "model": "gpt-4-turbo",
-           "messages": [{"role": "user", "content": prompt}]
+           "model": "claude-3-opus-20240229",
+           "messages": [{"role": "user", "content": prompt}],
+           "max_tokens": 1000
        }
        response = requests.post(url, headers=headers, json=data)
-       return response.json()["choices"][0]["message"]["content"]
+       return response.json()["content"][0]["text"]
    ```
 
-4. Create `app_a/app.py` with the following content:
+4. Create `app_b/app.py` with the following content:
    ```python
    from fastapi import FastAPI
    import uvicorn
-   from mcp_handler import build_mcp_package, send_mcp_to_server
-   from llm_client import call_openai_chat
+   import requests
+   from mcp_handler import parse_mcp_package
+   from llm_client import call_claude
 
    app = FastAPI()
 
-   @app.post("/summarize")
-   def summarize_email(email: str):
-       summary = call_openai_chat(f"Summarize this email briefly:\n{email}")
-       mcp_package = build_mcp_package(
-           system="You are a CRM assistant.",
-           memory=["Customer is a frequent buyer."],
-           conversation=[{"role": "user", "content": summary}],
-           current_task="Draft a polite reply."
-       )
-       send_mcp_to_server(mcp_package)
-       return {"status": "sent"}
+   @app.post("/poll")
+   def poll_mcp_server():
+       response = requests.post("http://localhost:9000/receive_context/AppB")
+       messages = response.json().get("messages", [])
+       replies = []
+       for mcp_package in messages:
+           prompt = parse_mcp_package(mcp_package)
+           reply = call_claude(prompt)
+           replies.append(reply)
+       return {"status": "processed", "replies": replies}
 
    if __name__ == "__main__":
-       uvicorn.run(app, port=8000)
+       uvicorn.run(app, port=8001)
    ```
 
 Steps to implement:
-1. First, create the `app_a` directory
-2. Then create each file one by one with their respective content
-3. Each file builds on the functionality of the others:
-   - `mcp_handler.py` handles creating and sending MCP packages
-   - `llm_client.py` manages OpenAI API communication
-   - `app.py` ties everything together with a FastAPI endpoint
+1. First, create the `app_b` directory
+2. Then create each file one by one with their respective content:
+   - `mcp_handler.py` for parsing received MCP packages into prompts
+   - `llm_client.py` for Anthropic API communication
+   - `app.py` for polling the MCP server and processing messages
+3. The files work together where:
+   - `app.py` polls the MCP server for new messages
+   - `mcp_handler.py` parses the received MCP packages into formatted prompts
+   - `llm_client.py` sends these prompts to Claude and gets responses
