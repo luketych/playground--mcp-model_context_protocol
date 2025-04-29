@@ -1,3 +1,7 @@
-`@Luke
-I want you to put the ports we will use into a config file. It should not be hardcoded anywhere and it should be pulled into each file from the config file.
-`
+Milestone:
+18. App C Integration - Multi-App Communication
+    1. Initial Setup
+       [ ] Create app_c directory structure in src
+       [ ] Define App C's purpose and communication patterns
+       [ ] Add App C's port to config.py
+       [ ] Create basic FastAPI application structure

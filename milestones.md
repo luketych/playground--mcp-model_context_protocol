@@ -159,3 +159,46 @@ Keep track of milestones, with datetimes when each milestone was created, and ea
     [✅] Updated imports to reflect new structure
     [✅] Updated test files to use src paths
     [✅] Updated README with new directory structure
+
+18. App C Integration - Multi-App Communication
+    1. Initial Setup
+       [ ] Create app_c directory structure in src
+       [ ] Define App C's purpose and communication patterns
+       [ ] Add App C's port to config.py
+       [ ] Create basic FastAPI application structure
+
+    2. MCP Server Updates
+       [ ] Add AppC to VALID_APPS list
+       [ ] Update inbox structure for multi-app messaging
+       [ ] Add routing logic for AppC messages
+       [ ] Update message delivery mechanism for multiple recipients
+
+    3. App C Core Implementation
+       [ ] Create mcp_handler.py with send/receive functions
+       [ ] Implement message processing logic
+       [ ] Add endpoints for communication
+       [ ] Create llm_client.py if needed
+
+    4. Testing Infrastructure
+       [ ] Create test_app_c directory
+       [ ] Write unit tests for App C functionality
+       [ ] Add App C to integration tests
+       [ ] Update existing tests for multi-app scenarios
+
+    5. Documentation and Examples
+       [ ] Update README with App C details
+       [ ] Document new message routing patterns
+       [ ] Add example flows between all apps
+       [ ] Update running instructions
+
+    6. Multi-App Communication
+       [ ] Implement AppA → AppC communication
+       [ ] Implement AppB → AppC communication
+       [ ] Implement AppC → AppA communication
+       [ ] Implement AppC → AppB communication
+
+    7. Process Management
+       [ ] Add App C to main.py startup
+       [ ] Update test_flow.py for new app
+       [ ] Test complete system with all apps
+       [ ] Document any new dependencies
