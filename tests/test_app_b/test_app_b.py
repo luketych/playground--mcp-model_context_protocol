@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 
-@patch('app_b.app.poll_mcp_server')
+@patch('src.app_b.app.poll_mcp_server')
 def test_poll_endpoint_no_messages(mock_poll, app_b_client):
     """Test polling when no messages are available."""
     mock_poll.return_value = {"messages": []}
@@ -11,8 +11,8 @@ def test_poll_endpoint_no_messages(mock_poll, app_b_client):
     assert response.json() == {"messages": []}
     mock_poll.assert_called_once()
 
-@patch('app_b.app.call_claude')
-@patch('app_b.app.poll_mcp_server')
+@patch('src.app_b.app.call_claude')
+@patch('src.app_b.app.poll_mcp_server')
 def test_poll_endpoint_with_messages(mock_poll, mock_claude, app_b_client):
     """Test polling when messages are available."""
     message = {
@@ -33,7 +33,7 @@ def test_poll_endpoint_with_messages(mock_poll, mock_claude, app_b_client):
     mock_poll.assert_called_once()
     mock_claude.assert_called_once()
 
-@patch('app_b.app.poll_mcp_server')
+@patch('src.app_b.app.poll_mcp_server')
 def test_poll_endpoint_mcp_error(mock_poll, app_b_client):
     """Test polling when MCP server connection fails."""
     mock_poll.side_effect = Exception("MCP Server connection failed")

@@ -1,7 +1,7 @@
 import pytest
 import requests
 from fastapi.testclient import TestClient
-from config import APP_A_PORT, APP_B_PORT
+from src.config import APP_A_PORT, APP_B_PORT
 
 def test_end_to_end_flow():
     """Test the complete flow from App A to App B through MCP server."""

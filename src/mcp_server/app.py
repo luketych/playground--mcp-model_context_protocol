@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
-from config import MCP_SERVER_PORT
-from mcp_server.router import router
+from src.config import MCP_SERVER_PORT
+from src.mcp_server.router import router
 
 app = FastAPI()
 app.include_router(router)

@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 
-@patch('app_a.app.send_mcp_to_server')
+@patch('src.app_a.app.send_mcp_to_server')
 def test_summarize_endpoint_success(mock_send, app_a_client, test_email):
     """Test successful email summarization."""
     mock_send.return_value = {"status": "success"}
@@ -15,7 +15,7 @@ def test_summarize_endpoint_success(mock_send, app_a_client, test_email):
     assert "summary" in data
     mock_send.assert_called_once()
 
-@patch('app_a.app.send_mcp_to_server')
+@patch('src.app_a.app.send_mcp_to_server')
 def test_summarize_endpoint_empty_email(mock_send, app_a_client):
     """Test summarization with empty email."""
     response = app_a_client.post(

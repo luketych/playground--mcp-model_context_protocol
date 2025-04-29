@@ -1,6 +1,6 @@
 import requests
 from typing import Dict, Any, List
-from config import MCP_SERVER_URL, MCP_RECEIVE_CONTEXT_ENDPOINT
+from src.config import MCP_SERVER_URL, MCP_RECEIVE_CONTEXT_ENDPOINT
 
 def parse_mcp_package(mcp_package: Dict[str, Any]) -> str:
     """

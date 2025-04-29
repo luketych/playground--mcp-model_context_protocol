@@ -151,3 +151,11 @@ Keep track of milestones, with datetimes when each milestone was created, and ea
     [✅] Verified end-to-end flow with running servers
     [✅] Improved error handling in App B for Claude API errors
     [✅] All configurations verified working through integration test
+
+17. Code Structure Reorganization
+    [✅] Created src directory for all application code
+    [✅] Moved app_a, app_b, mcp_server into src
+    [✅] Moved config.py and main.py into src
+    [✅] Updated imports to reflect new structure
+    [✅] Updated test files to use src paths
+    [✅] Updated README with new directory structure

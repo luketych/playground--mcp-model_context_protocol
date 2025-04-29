@@ -2,9 +2,9 @@ import pytest
 from fastapi.testclient import TestClient
 import pytest
 from unittest.mock import patch
-from mcp_server.app import app as mcp_app
-from app_a.app import app as app_a
-from app_b.app import app as app_b
+from src.mcp_server.app import app as mcp_app
+from src.app_a.app import app as app_a
+from src.app_b.app import app as app_b
 
 @pytest.fixture
 def mcp_client():
@@ -13,14 +13,14 @@ def mcp_client():
 @pytest.fixture
 def app_a_client():
     # Mock MCP server calls in App A
-    with patch('app_a.mcp_handler.send_mcp_to_server') as mock_send:
+    with patch('src.app_a.mcp_handler.send_mcp_to_server') as mock_send:
         mock_send.return_value = {"status": "success"}
         yield TestClient(app_a)
 
 @pytest.fixture
 def app_b_client():
     # Mock MCP server calls in App B
-    with patch('app_b.app.poll_mcp_server') as mock_poll:
+    with patch('src.app_b.app.poll_mcp_server') as mock_poll:
         mock_poll.return_value = {"messages": []}
         yield TestClient(app_b)
 

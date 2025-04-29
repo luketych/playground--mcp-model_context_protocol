@@ -104,17 +104,20 @@ Alternatively, you can start each service individually:
 
 ```
 /project-root
-    /mcp_server
-        app.py         # FastAPI app running the MCP server
-        router.py      # Handles MCP routing with stateless delivery
-    /app_a
-        app.py         # API to trigger summarization
-        llm_client.py  # OpenAI API client
-        mcp_handler.py # Creates and sends MCP packages
-    /app_b
-        app.py         # Polls MCP server for messages
-        llm_client.py  # Anthropic API client
-        mcp_handler.py # Parses received MCP packages
+    /src
+        /mcp_server
+            app.py         # FastAPI app running the MCP server
+            router.py      # Handles MCP routing with stateless delivery
+        /app_a
+            app.py         # API to trigger summarization
+            llm_client.py  # OpenAI API client
+            mcp_handler.py # Creates and sends MCP packages
+        /app_b
+            app.py         # Polls MCP server for messages
+            llm_client.py  # Anthropic API client
+            mcp_handler.py # Parses received MCP packages
+        config.py          # Central configuration for ports and URLs
+        main.py           # Process manager to run all services
 ```
 
 ### Flow Diagram

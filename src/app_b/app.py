@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException
 import uvicorn
-from config import APP_B_PORT
+from src.config import APP_B_PORT
 import requests
-from app_b.mcp_handler import parse_mcp_package, poll_mcp_server
-from app_b.llm_client import call_claude
+from src.app_b.mcp_handler import parse_mcp_package, poll_mcp_server
+from src.app_b.llm_client import call_claude
 import traceback
 
 app = FastAPI()
