@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import signal
 import sys
+from config import MCP_SERVER_PORT, APP_A_PORT, APP_B_PORT
 
 # Add the project root to PYTHONPATH
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -14,7 +15,13 @@ env_path = Path('.env')
 load_dotenv(env_path)
 
 def run_server(module, port):
-    uvicorn.run(module, host="127.0.0.1", port=port, reload=True)
+    uvicorn.run(
+        module, 
+        host="127.0.0.1", 
+        port=port,
+        reload=False,
+        log_level="info"
+    )
 
 def signal_handler(sig, frame):
     print("\nStopping all servers...")
@@ -26,9 +33,9 @@ if __name__ == "__main__":
     
     # Start all three servers in separate processes
     servers = [
-        ("mcp_server.app:app", 9002),
-        ("app_a.app:app", 8002),
-        ("app_b.app:app", 8003)
+        ("mcp_server.app:app", MCP_SERVER_PORT),
+        ("app_a.app:app", APP_A_PORT),
+        ("app_b.app:app", APP_B_PORT)
     ]
     
     processes = []

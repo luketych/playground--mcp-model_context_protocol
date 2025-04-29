@@ -2,10 +2,14 @@ import requests
 import time
 import json
 from typing import Dict, Any
+from config import (
+    APP_A_PORT, APP_B_PORT, MCP_SERVER_PORT,
+    APP_A_URL, APP_B_URL, MCP_SERVER_URL
+)
 
 def send_email(email_content: str) -> Dict[str, Any]:
     """Send an email to App A for summarization."""
-    url = "http://localhost:8002/summarize"
+    url = f"{APP_A_URL}/summarize"
     data = {"email": email_content}
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, json=data, headers=headers)
@@ -13,7 +17,7 @@ def send_email(email_content: str) -> Dict[str, Any]:
 
 def poll_app_b():
     """Poll App B for responses."""
-    url = "http://localhost:8003/poll"
+    url = f"{APP_B_URL}/poll"
     response = requests.post(url)
     return response.json()
 
@@ -51,6 +55,6 @@ if __name__ == "__main__":
     except requests.exceptions.ConnectionError:
         print("\nError: Could not connect to one of the services.")
         print("Make sure all services are running:")
-        print("- MCP Server (port 9002)")
-        print("- App A (port 8002)")
-        print("- App B (port 8003)")
+        print(f"- MCP Server (port {MCP_SERVER_PORT})")
+        print(f"- App A (port {APP_A_PORT})")
+        print(f"- App B (port {APP_B_PORT})")

@@ -1,5 +1,6 @@
 import requests
 from typing import Dict, Any, List
+from config import MCP_SERVER_URL, MCP_RECEIVE_CONTEXT_ENDPOINT
 
 def build_mcp_package(system: str, memory: List[str], conversation: List[Dict[str, str]], current_task: str) -> Dict[str, Any]:
     """
@@ -33,7 +34,7 @@ def send_mcp_to_server(mcp_package: Dict[str, Any]) -> Dict[str, Any]:
         Dict with status of the operation
     """
     try:
-        response = requests.post("http://localhost:9002/receive_context/AppA", json=mcp_package)
+        response = requests.post(f"{MCP_SERVER_URL}{MCP_RECEIVE_CONTEXT_ENDPOINT}/AppA", json=mcp_package)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:

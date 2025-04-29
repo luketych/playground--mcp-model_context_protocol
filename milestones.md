@@ -134,3 +134,20 @@ Keep track of milestones, with datetimes when each milestone was created, and ea
     [✅] Updated tests to use GET for polling operations
     [✅] Fixed "Method Not Allowed" error for curl GET requests
     [✅] More RESTful design for polling operation
+
+15. Configuration Centralization
+    [✅] Created central config.py file
+    [✅] Moved all port configurations to config
+    [✅] Moved MCP server URL and endpoint configurations to config
+    [✅] Updated App A to use config for ports and URLs
+    [✅] Updated App B to use config for ports and URLs
+    [✅] Updated MCP Server to use config for port
+    [✅] Updated test_flow.py to use config for ports and URLs
+    [✅] Updated main.py process management to use config ports
+
+16. Documentation and Integration Testing
+    [✅] Updated README with correct port configurations
+    [✅] Added integration test for curl commands
+    [✅] Verified end-to-end flow with running servers
+    [✅] Improved error handling in App B for Claude API errors
+    [✅] All configurations verified working through integration test

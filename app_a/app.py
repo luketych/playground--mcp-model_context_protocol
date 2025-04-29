@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 import uvicorn
+from config import APP_A_PORT
 from app_a.mcp_handler import build_mcp_package, send_mcp_to_server
 from app_a.llm_client import call_openai_chat
 from pydantic import BaseModel
@@ -32,4 +33,4 @@ async def summarize_email(request: EmailRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=8002)
+    uvicorn.run(app, port=APP_A_PORT)

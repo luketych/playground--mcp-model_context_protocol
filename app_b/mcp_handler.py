@@ -1,5 +1,6 @@
 import requests
 from typing import Dict, Any, List
+from config import MCP_SERVER_URL, MCP_RECEIVE_CONTEXT_ENDPOINT
 
 def parse_mcp_package(mcp_package: Dict[str, Any]) -> str:
     """
@@ -54,7 +55,7 @@ def poll_mcp_server() -> Dict[str, Any]:
         Dict containing any messages from the server
     """
     try:
-        response = requests.post("http://localhost:9002/receive_context/AppB")
+        response = requests.post(f"{MCP_SERVER_URL}{MCP_RECEIVE_CONTEXT_ENDPOINT}/AppB")
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:

@@ -15,10 +15,10 @@ This project demonstrates communication between two applications using the Model
 - Python 3.8 or higher
 - OpenAI API key (for App A)
 - Anthropic API key (for App B)
-- Available ports:
-  - 9001 (MCP Server)
-  - 8000 (App A)
-  - 8001 (App B)
+- Available ports (configured in config.py):
+  - 9002 (MCP Server)
+  - 8002 (App A)
+  - 8003 (App B)
 
 ## Installation
 
@@ -56,36 +56,48 @@ uv pip install -e .
 
 Start each service in a separate terminal (make sure your virtual environment is activated):
 
+To start all services at once, simply run:
+```bash
+python main.py
+```
+
+This will start:
+- MCP Server on port 9002
+- App A on port 8002
+- App B on port 8003
+
+Alternatively, you can start each service individually:
+
 1. Start the MCP Server:
    ```bash
    cd mcp_server
-   python -m uvicorn app:app --port=9001
+   python -m uvicorn app:app --port=9002
    ```
 
 2. Start App A:
    ```bash
    cd app_a
-   python -m uvicorn app:app --port=8000
+   python -m uvicorn app:app --port=8002
    ```
 
 3. Start App B:
    ```bash
    cd app_b
-   python -m uvicorn app:app --port=8001
+   python -m uvicorn app:app --port=8003
    ```
 
 ## Testing the Setup
 
 1. Send a test email to App A:
    ```bash
-   curl -X POST "http://localhost:8000/summarize" \
+   curl -X POST "http://localhost:8002/summarize" \
      -H "Content-Type: application/json" \
      -d '{"email":"Hello, I need help with my laptop refund."}'
    ```
 
 2. Check App B's response:
    ```bash
-   curl -X POST "http://localhost:8001/poll"
+   curl http://localhost:8003/poll
    ```
 
 ## Project Structure
