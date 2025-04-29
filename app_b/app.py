@@ -1,21 +1,48 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import uvicorn
 import requests
-from mcp_handler import parse_mcp_package
-from llm_client import call_claude
+from app_b.mcp_handler import parse_mcp_package, poll_mcp_server
+from app_b.llm_client import call_claude
+import traceback
 
 app = FastAPI()
 
 @app.post("/poll")
-def poll_mcp_server():
-    response = requests.post("http://localhost:9001/receive_context/AppB")
-    messages = response.json().get("messages", [])
-    replies = []
-    for mcp_package in messages:
-        prompt = parse_mcp_package(mcp_package)
-        reply = call_claude(prompt)
-        replies.append(reply)
-    return {"status": "processed", "replies": replies}
+async def poll_endpoint():
+    try:
+        # First try to poll the MCP server
+        try:
+            response = poll_mcp_server()
+        except Exception as e:
+            # Any poll error should return 503
+            raise HTTPException(
+                status_code=503, 
+                detail="Error connecting to MCP server: " + str(e)
+            )
+
+        messages = response.get("messages", [])
+        
+        # If there are no messages, return early with empty array
+        if not messages:
+            return {"messages": []}
+        
+        # Process messages with Claude if we have any
+        try:
+            replies = []
+            for mcp_package in messages:
+                prompt = parse_mcp_package(mcp_package)
+                reply = call_claude(prompt)
+                replies.append(reply)
+            return {"messages": messages}
+        except Exception as e:
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=f"Error processing messages: {str(e)}")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=8001)
+    uvicorn.run(app, port=8003)

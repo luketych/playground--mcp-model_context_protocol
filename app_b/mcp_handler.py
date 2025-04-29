@@ -1,11 +1,61 @@
-def parse_mcp_package(mcp_package):
-    context = mcp_package["context"]
-    prompt = (
-        f"System Instruction: {context['system_message']}\n\n"
-        "Memory:\n" + "\n".join(context.get("memory", [])) + "\n\n"
-        "Conversation:\n" + "\n".join(
-            f"{m['role'].capitalize()}: {m['content']}" for m in context.get("conversation", [])
-        ) + "\n\n"
-        f"Task: {context['current_task']}"
-    )
-    return prompt
+import requests
+from typing import Dict, Any, List
+
+def parse_mcp_package(mcp_package: Dict[str, Any]) -> str:
+    """
+    Parse an MCP package into a prompt for Claude.
+    
+    Args:
+        mcp_package: Dictionary containing system, memory, conversation, and current_task
+        
+    Returns:
+        Formatted prompt string for Claude
+    """
+    system = mcp_package.get('system', '')
+    memory = mcp_package.get('memory', [])
+    conversation = mcp_package.get('conversation', [])
+    current_task = mcp_package.get('current_task', '')
+    
+    # Build the prompt
+    prompt_parts = []
+    
+    # Add system context
+    if system:
+        prompt_parts.append(f"System: {system}\n")
+    
+    # Add memory items
+    if memory:
+        prompt_parts.append("Context:")
+        for item in memory:
+            prompt_parts.append(f"- {item}")
+        prompt_parts.append("")  # Empty line
+    
+    # Add conversation
+    if conversation:
+        prompt_parts.append("Conversation:")
+        for msg in conversation:
+            role = msg.get('role', '')
+            content = msg.get('content', '')
+            prompt_parts.append(f"{role}: {content}")
+        prompt_parts.append("")  # Empty line
+    
+    # Add current task
+    if current_task:
+        prompt_parts.append(f"Task: {current_task}")
+    
+    return "\n".join(prompt_parts)
+
+
+def poll_mcp_server() -> Dict[str, Any]:
+    """
+    Poll MCP server for messages.
+    
+    Returns:
+        Dict containing any messages from the server
+    """
+    try:
+        response = requests.post("http://localhost:9002/receive_context/AppB")
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Failed to poll MCP server: {str(e)}")

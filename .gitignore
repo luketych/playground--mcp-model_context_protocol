@@ -1,45 +1,34 @@
-# === Node.js / npm / Yarn ===
-node_modules/
-dist/
-build/
-.npm/
-.yarn/
-.pnp.*
-*.tgz
-yarn-error.log
-package-lock.json
-yarn.lock
-
-# === Python ===
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
-*.egg
-*.egg-info/
+.Python
+env/
+venv/
+.env/
+.venv/
+.uv/
+
+# Environment variables
+.env
+
+# Distribution / packaging
 dist/
 build/
-pip-wheel-metadata/
-.env
-.venv
-venv/
-env/
-*.log
+*.egg-info/
 
-# === VS Code ===
+# IDE
+.idea/
 .vscode/
-
-# === MacOS ===
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# === Docker (optional) ===
-*.pid
-docker-compose.override.yml
-.env.local
-
-# === OS / Editor backups ===
 *.swp
 *.swo
-*.swn
-*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+.aider*
