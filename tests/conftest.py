@@ -5,6 +5,7 @@ from unittest.mock import patch
 from src.mcp_server.app import app as mcp_app
 from src.app_a.app import app as app_a
 from src.app_b.app import app as app_b
+from src.app_c.app import app as app_c
 
 @pytest.fixture
 def mcp_client():
@@ -23,6 +24,13 @@ def app_b_client():
     with patch('src.app_b.app.poll_mcp_server') as mock_poll:
         mock_poll.return_value = {"messages": []}
         yield TestClient(app_b)
+
+@pytest.fixture
+def app_c_client():
+    # Mock MCP server calls in App C
+    with patch('src.app_c.app.poll_mcp_server') as mock_poll:
+        mock_poll.return_value = {"messages": []}
+        yield TestClient(app_c)
 
 @pytest.fixture
 def test_email():

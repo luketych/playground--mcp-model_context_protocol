@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 import uvicorn
-from src.config import APP_A_PORT
-from src.app_a.mcp_handler import build_mcp_package, send_mcp_to_server
-from src.app_a.llm_client import call_openai_chat
+from config import APP_A_PORT
+from app_a.mcp_handler import build_mcp_package, send_mcp_to_server
+from app_a.llm_client import call_openai_chat
 from pydantic import BaseModel
 import traceback
 

@@ -5,7 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import signal
 import sys
-from config import MCP_SERVER_PORT, APP_A_PORT, APP_B_PORT
+from config import MCP_SERVER_PORT, APP_A_PORT, APP_B_PORT, APP_C_PORT
 
 # Add the project root to PYTHONPATH
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +35,8 @@ if __name__ == "__main__":
     servers = [
         ("mcp_server.app:app", MCP_SERVER_PORT),
         ("app_a.app:app", APP_A_PORT),
-        ("app_b.app:app", APP_B_PORT)
+        ("app_b.app:app", APP_B_PORT),
+        ("app_c.app:app", APP_C_PORT)
     ]
     
     processes = []

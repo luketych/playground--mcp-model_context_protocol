@@ -1,6 +1,6 @@
 import requests
 from typing import Dict, Any, List
-from src.config import MCP_SERVER_URL, MCP_RECEIVE_CONTEXT_ENDPOINT
+from config import MCP_SERVER_URL, MCP_RECEIVE_CONTEXT_ENDPOINT
 
 def build_mcp_package(system: str, memory: List[str], conversation: List[Dict[str, str]], current_task: str) -> Dict[str, Any]:
     """
