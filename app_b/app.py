@@ -7,7 +7,7 @@ import traceback
 
 app = FastAPI()
 
-@app.post("/poll")
+@app.get("/poll")
 async def poll_endpoint():
     try:
         # First try to poll the MCP server
