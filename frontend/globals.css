@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-a-color: #4F46E5;
+  --app-b-color: #059669;
+  --app-c-color: #D97706;
+  --mcp-color: #DC2626;
+  --dark-color: #1F2937;
+  --light-color: #F3F4F6;
+}
+
+@layer components {
+  .node-card {
+    @apply border border-gray-700 rounded-lg p-4 bg-dark/50 backdrop-blur-sm;
+  }
+
+  .message-particle {
+    @apply absolute h-2 w-2 rounded-full opacity-0;
+    animation: message-flow 2s ease-in-out forwards;
+  }
+
+  .connection-line {
+    @apply stroke-gray-600 stroke-2;
+  }
+
+  .connection-line.active {
+    @apply stroke-app-a;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(31, 41, 55, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(75, 85, 99, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(107, 114, 128, 0.5);
+}
+
+/* Dark mode enhancements */
+body {
+  @apply bg-gradient-to-br from-dark to-gray-900;
+  min-height: 100vh;
+}
+
+/* Animation helpers */
+.message-flow-enter {
+  transform: translateX(0) translateY(0);
+  opacity: 0;
+}
+
+.message-flow-enter-active {
+  transform: translateX(var(--tx)) translateY(var(--ty));
+  opacity: 1;
+  transition: transform 1s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.message-flow-exit {
+  transform: translateX(var(--tx)) translateY(var(--ty));
+  opacity: 1;
+}
+
+.message-flow-exit-active {
+  transform: translateX(calc(var(--tx) * 2)) translateY(calc(var(--ty) * 2));
+  opacity: 0;
+  transition: transform 1s ease-in-out, opacity 0.3s ease-in-out;
+}
