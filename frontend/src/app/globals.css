@@ -12,26 +12,37 @@
   --dark: #1E293B;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  min-height: 100vh;
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+  }
 }
 
 @layer components {
   .node-card {
     @apply bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4 shadow-lg;
   }
+
+  .connection-line {
+    stroke: theme('colors.gray.600');
+    stroke-width: 1.5;
+    stroke-dasharray: 5;
+    animation: flow 30s linear infinite;
+  }
+}
+
+@layer utilities {
+  .backdrop-blur {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 /* Node and connection animations */
-.connection-line {
-  stroke: theme('colors.gray.600');
-  stroke-width: 1.5;
-  stroke-dasharray: 5;
-  animation: flow 30s linear infinite;
-}
-
 @keyframes flow {
   to {
     stroke-dashoffset: -100;
@@ -106,36 +117,37 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.gray.700');
-  border-radius: 4px;
+  @apply bg-gray-700 rounded;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.gray.600');
+  @apply bg-gray-600;
 }
 
-/* Node colors */
-.text-app-a { color: var(--app-a-color); }
-.text-app-b { color: var(--app-b-color); }
-.text-app-c { color: var(--app-c-color); }
-.text-mcp { color: var(--mcp-color); }
+/* Prose styles */
+.prose {
+  @apply text-gray-300;
+}
 
-.stroke-app-a { stroke: var(--app-a-color); }
-.stroke-app-b { stroke: var(--app-b-color); }
-.stroke-app-c { stroke: var(--app-c-color); }
-.stroke-mcp { stroke: var(--mcp-color); }
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply text-white;
+}
 
-.fill-app-a { fill: var(--app-a-color); }
-.fill-app-b { fill: var(--app-b-color); }
-.fill-app-c { fill: var(--app-c-color); }
-.fill-mcp { fill: var(--mcp-color); }
+.prose code {
+  @apply text-blue-400;
+}
 
-/* Blur effects */
-.backdrop-blur {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+.prose a {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+.prose ul > li::before {
+  @apply bg-gray-600;
 }

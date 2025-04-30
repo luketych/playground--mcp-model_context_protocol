@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import SystemMap from '@/components/SystemMap';
-import MessageInspector from '@/components/MessageInspector';
-import SystemControls from '@/components/SystemControls';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import SystemMap from '../components/SystemMap';
+import MessageInspector from '../components/MessageInspector';
+import SystemControls from '../components/SystemControls';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 export default function HomePage() {
   const { isConnected } = useWebSocket();
