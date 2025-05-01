@@ -5,6 +5,9 @@ export interface Message {
   target?: string;
   type: 'command' | 'query' | 'event' | 'response';
   content: any;
+  timestamp?: string;
+  status?: 'pending' | 'processing' | 'completed' | 'error';
+  metadata?: Record<string, any>;
 }
 
 // Log entry types
@@ -57,3 +60,6 @@ export interface MessageAnimation {
   progress: number;
   startTime: number;
 }
+
+// App ID type
+export type AppId = 'mcp' | 'app_a' | 'app_b' | 'web-ui';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useSystemStore } from '../stores/system';
 import { useLogStore } from '../stores/logs';
@@ -11,6 +11,7 @@ export function useWebSocket() {
   const updateStatus = useSystemStore(state => state.updateStatus);
   const addLog = useLogStore(state => state.addLog);
   const socketRef = useRef<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     // Cleanup function to disconnect socket on unmount
@@ -19,6 +20,7 @@ export function useWebSocket() {
         console.log('Disconnecting WebSocket');
         socketRef.current.disconnect();
         socketRef.current = null;
+        setIsConnected(false);
       }
     };
 
@@ -29,12 +31,12 @@ export function useWebSocket() {
       
       // Create socket connection
       socketRef.current = io(wsUrl, {
-        transports: ['websocket'],
-        reconnectionAttempts: 5,
+        transports: ['websocket', 'polling'],  // Allow fallback to polling
+        reconnectionAttempts: 10,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
-        timeout: 20000,
-        path: '/socket.io'
+        timeout: 30000,
+        autoConnect: true
       });
 
       const socket = socketRef.current;
@@ -43,6 +45,7 @@ export function useWebSocket() {
       socket.on('connect', () => {
         console.log('Connected to WebSocket server');
         updateStatus('connected');
+        setIsConnected(true);
 
         // Send initialization message
         socket.emit('init', {
@@ -55,11 +58,13 @@ export function useWebSocket() {
       socket.on('disconnect', () => {
         console.log('Disconnected from WebSocket server');
         updateStatus('disconnected');
+        setIsConnected(false);
       });
 
       socket.on('connect_error', (error: Error) => {
         console.error('WebSocket connection error:', error);
         updateStatus('error', error.message);
+        setIsConnected(false);
       });
 
       // Message handlers
@@ -111,13 +116,14 @@ export function useWebSocket() {
     return cleanup;
   }, []); // Empty dependency array - only run once on mount
 
-  // Return a function to send messages
+  // Return a function to send messages and the isConnected state
   return {
     sendMessage: (message: any) => {
       if (socketRef.current) {
         socketRef.current.emit('send_message', { data: message });
       }
-    }
+    },
+    isConnected
   };
 }
 

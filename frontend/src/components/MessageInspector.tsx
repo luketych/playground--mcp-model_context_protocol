@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { useSystemStore } from '@/stores/system';
+import { useMessageStore } from '@/stores/messages';
 import type { Message } from '@/types/mcp';
 
 export default function MessageInspector() {
-  const { messages, clearMessages } = useSystemStore();
+  const { messages, clearMessages } = useMessageStore();
   const [isClearing, setIsClearing] = useState(false);
 
   const sortedMessages = useMemo(() => {
-    return Object.values(messages).sort((a, b) => {
+    return Object.values(messages).sort((a: Message, b: Message) => {
       if (!a.timestamp || !b.timestamp) return 0;
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });
@@ -64,20 +64,20 @@ export default function MessageInspector() {
             </span>
           </div>
           
-          {message.content.memory.length > 0 && (
+          {message.content.memory && message.content.memory.length > 0 && (
             <div className="mt-2 p-2 bg-gray-900/50 rounded border border-gray-700">
               <p className="text-xs font-medium text-gray-400 mb-1">Memory:</p>
               <ul className="memory-list">
-                {message.content.memory.map((item, index) => (
+                {message.content.memory.map((item: string, index: number) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
             </div>
           )}
 
-          {message.content.conversation.length > 0 && (
+          {message.content.conversation && message.content.conversation.length > 0 && (
             <div className="mt-2 pt-2 border-t border-gray-700/50">
-              {message.content.conversation.map((msg, index) => (
+              {message.content.conversation.map((msg: { role: string, content: string }, index: number) => (
                 <div 
                   key={index}
                   className={`conversation-message conversation-message-${msg.role}`}
