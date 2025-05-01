@@ -106,12 +106,21 @@ async def send_message(sid, data):
                 'message': mcp_message
             })
             
-            # Log the message
+            # Log message received by MCP
             await broadcast_log({
                 'level': 'INFO',
-                'source': mcp_message['source'],
+                'source': 'mcp',
+                'message': 'Message received from web-ui',
+                'data': mcp_message,
+                'type': 'message'
+            })
+            
+            # Log message forwarded to target app
+            await broadcast_log({
+                'level': 'INFO',
+                'source': 'mcp',
                 'target': target,
-                'message': 'Message sent',
+                'message': f'Message forwarded to {backend_target}',
                 'data': mcp_message,
                 'type': 'message'
             })

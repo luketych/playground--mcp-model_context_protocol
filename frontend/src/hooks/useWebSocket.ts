@@ -83,10 +83,14 @@ export function useWebSocket() {
 
       socket.on('log', (log: LogEntry) => {
         console.log('Received log:', log);
-        addLog({
+        // Ensure timestamp exists
+        const logWithTimestamp = {
           ...log,
           timestamp: log.timestamp || new Date().toISOString()
-        });
+        };
+        
+        // Add log to store (duplicate checking is handled in the store)
+        addLog(logWithTimestamp);
       });
 
       // System status handlers
