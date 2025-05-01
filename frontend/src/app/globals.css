@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+}
+
+@layer components {
+  .node-card {
+    @apply border border-gray-700 rounded-lg p-4 bg-gray-800/50 backdrop-blur;
+  }
+
+  .input-field {
+    @apply w-full bg-gray-800 text-gray-200 rounded px-3 py-2 border border-gray-700 
+    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply btn bg-blue-600 hover:bg-blue-700 text-white 
+    disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply btn border border-gray-600 hover:border-gray-500 text-gray-300 
+    hover:text-white disabled:border-gray-700 disabled:text-gray-500 
+    disabled:cursor-not-allowed;
+  }
+
+  .status-badge {
+    @apply px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-badge-online {
+    @apply bg-green-500 bg-opacity-20 text-green-400;
+  }
+
+  .status-badge-offline {
+    @apply bg-red-500 bg-opacity-20 text-red-400;
+  }
+
+  .status-badge-error {
+    @apply bg-yellow-500 bg-opacity-20 text-yellow-400;
+  }
+
+  .message-card {
+    @apply border border-gray-700 rounded-lg p-4 bg-gray-800/50 space-y-2;
+  }
+
+  .message-header {
+    @apply flex items-center justify-between;
+  }
+
+  .message-content {
+    @apply space-y-2 text-sm;
+  }
+
+  .conversation-message {
+    @apply text-sm mb-2;
+  }
+
+  .conversation-message-system {
+    @apply text-blue-400;
+  }
+
+  .conversation-message-user {
+    @apply text-gray-300;
+  }
+
+  .conversation-message-assistant {
+    @apply text-green-400;
+  }
+
+  .memory-list {
+    @apply text-xs text-gray-400 list-disc list-inside space-y-1;
+  }
+
+  .queue-item {
+    @apply text-xs bg-gray-800 p-1 rounded flex items-center justify-between;
+  }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.5);
+}
